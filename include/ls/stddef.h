@@ -14,4 +14,9 @@
 	const typeof( ((type *)0)->member ) *__mptr = (ptr);    \
 	(type *)( (char *)__mptr - offsetof(type,member) );})
 
+#define __ALIGN_MASK(x, mask)	(((x) + (mask)) & ~(mask))
+
+#define likely(x)	(__builtin_expect(!!(x), 1))
+#define unlikely(x)	(__builtin_expect(!!(x), 0))
+
 #endif /* __LS_STDDEF_H */

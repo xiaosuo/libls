@@ -5,4 +5,18 @@ nobase_include_HEADERS = \
 			 ls/rbtree_augmented.h \
 			 ls/rbtree.h \
 			 ls/stddef.h \
-			 ls/types.h
+			 ls/types.h \
+			 ls/bitops.h \
+			 ls/bitmap.h \
+			 ls/string.h \
+			 ls/hexdump.h \
+			 ls/bitops/__ffs.h \
+			 ls/bitops/__fls.h \
+			 ls/bitops/atomic.h \
+			 ls/bitops/ffs.h \
+			 ls/bitops/ffz.h \
+			 ls/bitops/find.h \
+			 ls/bitops/fls.h \
+			 ls/bitops/fls64.h \
+			 ls/bitops/hweight.h \
+			 ls/bitops/non-atomic.h

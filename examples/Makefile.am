@@ -3,8 +3,11 @@ LDADD = ../src/.libs/libls.a
 
 noinst_PROGRAMS = \
 		  list \
-		  rbtree
+		  rbtree \
+		  bitmap
 
 list_SOURCES = list.c
 
 rbtree_SOURCES = rbtree.c
+
+bitmap_SOURCES = bitmap.c

@@ -30,6 +30,10 @@ extern "C" {
 #include <ls/list.h>
 #include <ls/rbtree.h>
 #include <ls/rbtree_augmented.h>
+#include <ls/bitops.h>
+#include <ls/bitmap.h>
+#include <ls/string.h>
+#include <ls/hexdump.h>
 
 #ifdef __cplusplus
 }
