@@ -36,6 +36,7 @@ extern "C" {
 #include <ls/hexdump.h>
 #include <ls/ini.h>
 #include <ls/pr.h>
+#include <ls/jhash.h>
 
 #ifdef __cplusplus
 }

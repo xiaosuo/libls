@@ -12,6 +12,7 @@ nobase_include_HEADERS = \
 			 ls/hexdump.h \
 			 ls/ini.h \
 			 ls/pr.h \
+			 ls/jhash.h \
 			 ls/bitops/__ffs.h \
 			 ls/bitops/__fls.h \
 			 ls/bitops/atomic.h \
