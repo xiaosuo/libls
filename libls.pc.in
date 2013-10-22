@@ -6,5 +6,6 @@ includedir=@includedir@
 Name: libls
 Description: Linux specific library
 Version: @VERSION@
+Requires: libsystemd-daemon
 Libs: -L${libdir} -lls
 Cflags: -I${includedir}

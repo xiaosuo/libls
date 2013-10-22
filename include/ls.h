@@ -35,6 +35,7 @@ extern "C" {
 #include <ls/string.h>
 #include <ls/hexdump.h>
 #include <ls/ini.h>
+#include <ls/pr.h>
 
 #ifdef __cplusplus
 }

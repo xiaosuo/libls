@@ -9,8 +9,8 @@
 
 #include <ls/hexdump.h>
 #include <ls/string.h>
+#include <ls/pr.h>
 
-#include <stdio.h>
 #include <ctype.h>
 
 const char hex_asc[] = "0123456789abcdef";
@@ -210,15 +210,13 @@ void print_hex_dump(const char *level, const char *prefix_str, int prefix_type,
 
 		switch (prefix_type) {
 		case DUMP_PREFIX_ADDRESS:
-			fprintf(stderr, "%s%s%p: %s\n",
-			       level, prefix_str, ptr + i, linebuf);
+			pr("%s%s%p: %s\n", level, prefix_str, ptr + i, linebuf);
 			break;
 		case DUMP_PREFIX_OFFSET:
-			fprintf(stderr, "%s%s%.8x: %s\n", level, prefix_str, i,
-				linebuf);
+			pr("%s%s%.8x: %s\n", level, prefix_str, i, linebuf);
 			break;
 		default:
-			fprintf(stderr, "%s%s%s\n", level, prefix_str, linebuf);
+			pr("%s%s%s\n", level, prefix_str, linebuf);
 			break;
 		}
 	}

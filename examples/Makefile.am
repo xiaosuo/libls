@@ -5,12 +5,15 @@ noinst_PROGRAMS = \
 		  list \
 		  rbtree \
 		  bitmap \
-		  ini
+		  ini \
+		  pr
 
 list_SOURCES = list.c
 
 rbtree_SOURCES = rbtree.c
 
 bitmap_SOURCES = bitmap.c
+
+pr_SOURCES = pr.c
 
 EXTRA_DIST = sample.ini
