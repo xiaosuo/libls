@@ -7,5 +7,6 @@ libls_la_SOURCES = \
 		   find_next_bit.c \
 		   find_last_bit.c \
 		   string.c \
-		   hexdump.c
+		   hexdump.c \
+		   ini.c
 libls_la_LDFLAGS = -version-info 0:0:0

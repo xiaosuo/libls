@@ -34,6 +34,7 @@ extern "C" {
 #include <ls/bitmap.h>
 #include <ls/string.h>
 #include <ls/hexdump.h>
+#include <ls/ini.h>
 
 #ifdef __cplusplus
 }

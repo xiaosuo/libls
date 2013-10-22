@@ -10,6 +10,7 @@ nobase_include_HEADERS = \
 			 ls/bitmap.h \
 			 ls/string.h \
 			 ls/hexdump.h \
+			 ls/ini.h \
 			 ls/bitops/__ffs.h \
 			 ls/bitops/__fls.h \
 			 ls/bitops/atomic.h \

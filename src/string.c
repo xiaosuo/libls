@@ -2,6 +2,8 @@
 #include <ls/stddef.h>
 
 #include <stdio.h>
+#include <ctype.h>
+#include <string.h>
 
 /**
  * vscnprintf - Format a string and place it in a buffer
@@ -51,4 +53,27 @@ int scnprintf(char *buf, size_t size, const char *fmt, ...)
 	va_end(args);
 
 	return i;
+}
+
+char *strlstrip(char *str)
+{
+	while (isspace(*(unsigned char *)str))
+		str++;
+
+	return str;
+}
+
+char *strrstrip(char *str)
+{
+	char *end = str + strlen(str) - 1;
+
+	while (end >= str && isspace(*(unsigned char *)end))
+		*end-- = '\0';
+
+	return str;
+}
+
+char *strstrip(char *str)
+{
+	return strrstrip(strlstrip(str));
 }
