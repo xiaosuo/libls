@@ -37,6 +37,7 @@ extern "C" {
 #include <ls/ini.h>
 #include <ls/pr.h>
 #include <ls/jhash.h>
+#include <ls/avltree.h>
 
 #ifdef __cplusplus
 }

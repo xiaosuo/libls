@@ -38,7 +38,7 @@ AC_TYPE_UINT8_T
 
 # Checks for library functions.
 AC_FUNC_MALLOC
-AC_CHECK_FUNCS([isascii memset strchr])
+AC_CHECK_FUNCS([isascii memset strchr strdup strrchr])
 
 AC_CONFIG_FILES([Makefile
 		 libls.pc

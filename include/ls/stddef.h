@@ -19,4 +19,10 @@
 #define likely(x)	(__builtin_expect(!!(x), 1))
 #define unlikely(x)	(__builtin_expect(!!(x), 0))
 
+/*
+ * swap - swap value of @a and @b
+ */
+#define swap(a, b) \
+	do { typeof(a) __tmp = (a); (a) = (b); (b) = __tmp; } while (0)
+
 #endif /* __LS_STDDEF_H */
