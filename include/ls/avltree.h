@@ -10,7 +10,7 @@ enum {
 struct avl_node {
 	unsigned long	__parent_balance;
 	struct avl_node	*left, *right;
-};
+} __attribute__((aligned(sizeof(long))));
 
 struct avl_root {
 	struct avl_node	*node;
