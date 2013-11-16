@@ -1,80 +1,96 @@
 #include <ls/ini.h>
 #include <ls/string.h>
+#include <ls/file.h>
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <limits.h>
+
+struct ini_parse_context {
+	char		*section;
+	unsigned int	line_number;
+	int		(*callback)(int line_number, const char *section,
+				    const char *name, const char *value,
+				    void *user);
+	void		*user;
+};
+
+static int parse_ini(char *line, unsigned int len, void *user)
+{
+	struct ini_parse_context *ctx = user;
+	char *name, *value;
+
+	if (line[len - 1] == '\n')
+		line[--len] = '\0';
+	ctx->line_number++;
+
+	/* Ignore the comments start with ';' and '#'. */
+	if (line[0] == ';' || line[0] == '#')
+		goto out;
+
+	/* Ignore the leading and trailing white spaces. */
+	name = strstrip(line);
+	len = strlen(name);
+	if (len == 0)
+		goto out;
+
+	/* Parse the section section. */
+	if (name[0] == '[') {
+		if (name[len - 1] != ']' || len <= 2)
+			goto err;
+		free(ctx->section);
+		ctx->section = strndup(name + 1, len - 2);
+		if (!ctx->section)
+			goto err;
+		goto out;
+	}
+
+	/* Parse the name and value. */
+	value = strchr(line, '=');
+	if (!value)
+		goto err;
+	*value++ = '\0';
+	/* Ignore spaces. */
+	name = strrstrip(name);
+	value = strlstrip(value);
+	if (!*name)
+		goto err;
+	if (*value == '"') {
+		len = strlen(value);
+		if (len >= 2 && value[len - 1] == '"') {
+			value++;
+			value[len - 2] = '\0';
+		}
+	}
+
+	if (ctx->callback(ctx->line_number, ctx->section, name, value,
+				ctx->user))
+		goto err;
+out:
+	return 0;
+err:
+	return -1;
+}
 
 int ini_parse(const char *filename, int (*callback)(int line_number,
 	      const char *section, const char *name, const char *value,
 	      void *user), void *user)
 {
-	FILE *fh;
-	char line[LINE_MAX], section_buffer[LINE_MAX], *section = NULL;
-	int retval = -1, line_number = 0;
+	struct ini_parse_context *ctx;
+	int retval = -1;
 
-	fh = fopen(filename, "r");
-	if (!fh)
+	ctx = calloc(1, sizeof(*ctx));
+	if (!ctx)
 		goto err;
-	while (fgets(line, sizeof(line), fh)) {
-		int len = strlen(line);
-		char *name, *value;
-
-		if (len == 0 || line[len - 1] != '\n') {
-			if (!feof(fh)) /* The size of line isn't big enough. */
-				goto err2;
-		} else {
-			line[--len] = '\0';
-		}
-		++line_number;
-
-		/* Ignore the comments start with ';' and '#'. */
-		if (line[0] == ';' || line[0] == '#')
-			continue;
-
-		/* Ignore the leading and trailing white spaces. */
-		name = strstrip(line);
-		len = strlen(name);
-		if (len == 0)
-			continue;
-
-		/* Parse the section section. */
-		if (name[0] == '[') {
-			if (name[len - 1] != ']' || len <= 2)
-				goto err2;
-			if (!section)
-				section = section_buffer;
-			memcpy(section, name + 1, len - 2);
-			section[len - 2] = '\0';
-			continue;
-		}
-
-		/* Parse the name and value. */
-		value = strchr(line, '=');
-		if (!value)
-			goto err2;
-		*value++ = '\0';
-		/* Ignore spaces. */
-		name = strrstrip(name);
-		value = strlstrip(value);
-		if (!*name)
-			goto err2;
-		if (*value == '"') {
-			len = strlen(value);
-			if (len >= 2 && value[len - 1] == '"') {
-				value++;
-				value[len - 2] = '\0';
-			}
-		}
-
-		if (callback(line_number, section, name, value, user))
-			goto err2;
-	}
-	if (ferror(fh) || !feof(fh))
+	ctx->callback = callback;
+	ctx->user = user;
+	if (file_each_line(filename, parse_ini, ctx))
 		goto err2;
 	retval = 0;
 err2:
-	fclose(fh);
+	free(ctx->section);
+	free(ctx);
 err:
 	return retval;
 }
