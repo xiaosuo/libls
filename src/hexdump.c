@@ -161,7 +161,7 @@ nil:
 
 /**
  * print_hex_dump - print a text hex dump to syslog for a binary blob of data
- * @level: kernel log level (e.g. KERN_DEBUG)
+ * @level: kernel log level (e.g. SD_DEBUG)
  * @prefix_str: string to prefix each line with;
  *  caller supplies trailing spaces for alignment if desired
  * @prefix_type: controls whether prefix of an offset, address, or none
@@ -182,7 +182,7 @@ nil:
  * "line size" chunks to format and print.
  *
  * E.g.:
- *   print_hex_dump(KERN_DEBUG, "raw data: ", DUMP_PREFIX_ADDRESS,
+ *   print_hex_dump(SD_DEBUG, "raw data: ", DUMP_PREFIX_ADDRESS,
  *		    16, 1, frame->data, frame->len, true);
  *
  * Example output using %DUMP_PREFIX_OFFSET and 1-byte mode:
@@ -231,12 +231,12 @@ void print_hex_dump(const char *level, const char *prefix_str, int prefix_type,
  * @buf: data blob to dump
  * @len: number of bytes in the @buf
  *
- * Calls print_hex_dump(), with log level of KERN_DEBUG,
+ * Calls print_hex_dump(), with log level of SD_DEBUG,
  * rowsize of 16, groupsize of 1, and ASCII output included.
  */
 void print_hex_dump_bytes(const char *prefix_str, int prefix_type,
 			  const void *buf, size_t len)
 {
-	/* TODO: replace magic number 7 */
-	print_hex_dump("7", prefix_str, prefix_type, 16, 1, buf, len, true);
+	print_hex_dump(SD_DEBUG, prefix_str, prefix_type, 16, 1, buf, len,
+			true);
 }
