@@ -7,7 +7,8 @@ noinst_PROGRAMS = \
 		  bitmap \
 		  ini \
 		  pr \
-		  avltree
+		  avltree \
+		  file
 
 list_SOURCES = list.c
 
@@ -18,5 +19,7 @@ bitmap_SOURCES = bitmap.c
 pr_SOURCES = pr.c
 
 avltree_SOURCES = avltree.c
+
+file_SOURCES = file.c
 
 EXTRA_DIST = sample.ini
