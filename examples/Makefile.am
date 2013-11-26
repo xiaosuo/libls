@@ -8,7 +8,8 @@ noinst_PROGRAMS = \
 		  ini \
 		  pr \
 		  avltree \
-		  file
+		  file \
+		  csv
 
 list_SOURCES = list.c
 
@@ -22,4 +23,8 @@ avltree_SOURCES = avltree.c
 
 file_SOURCES = file.c
 
-EXTRA_DIST = sample.ini
+csv_SOURCES = csv.c
+
+EXTRA_DIST = \
+	     sample.ini \
+	     sample.csv

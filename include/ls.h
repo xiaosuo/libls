@@ -39,6 +39,7 @@ extern "C" {
 #include <ls/jhash.h>
 #include <ls/avltree.h>
 #include <ls/file.h>
+#include <ls/csv.h>
 
 #ifdef __cplusplus
 }

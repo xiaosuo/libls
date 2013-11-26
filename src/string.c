@@ -77,3 +77,58 @@ char *strstrip(char *str)
 {
 	return strrstrip(strlstrip(str));
 }
+
+char *astrncat(char *dest, const char *src, unsigned int src_len)
+{
+	int dest_len = dest ? strlen(dest) : 0;
+
+	dest = realloc(dest, dest_len + src_len + 1);
+	if (dest) {
+		memcpy(dest + dest_len, src, src_len);
+		dest[dest_len + src_len] = '\0';
+	}
+
+	return dest;
+}
+
+char *astrcat(char *dest, const char *src)
+{
+	return astrncat(dest, src, strlen(src));
+}
+
+void strv_free(struct strv *sv)
+{
+	int i;
+
+	for (i = 0; i < sv->len; i++)
+		free(sv->strv[i]);
+	free(sv->strv);
+}
+
+int strv_append3(struct strv *sv, const char *str, int len)
+{
+	if (sv->len >= sv->size) {
+		unsigned int new_size;
+		char **new_strv;
+
+		new_size = sv->size * 2;
+		if (!new_size)
+			new_size = 1;
+		new_strv = realloc(sv->strv, sizeof(*new_strv) * new_size);
+		if (!new_strv)
+			goto err;
+		sv->strv = new_strv;
+		sv->size = new_size;
+	}
+	if (!(sv->strv[sv->len++] = strndup(str, len)))
+		goto err;
+
+	return 0;
+err:
+	return -1;
+}
+
+int strv_append(struct strv *sv, const char *str)
+{
+	return strv_append3(sv, str, strlen(str));
+}

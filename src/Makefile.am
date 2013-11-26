@@ -11,5 +11,6 @@ libls_la_SOURCES = \
 		   hexdump.c \
 		   ini.c \
 		   avltree.c \
-		   file.c
+		   file.c \
+		   csv.c
 libls_la_LDFLAGS = -version-info 0:0:0

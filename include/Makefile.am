@@ -15,6 +15,7 @@ nobase_include_HEADERS = \
 			 ls/jhash.h \
 			 ls/avltree.h \
 			 ls/file.h \
+			 ls/csv.h \
 			 ls/bitops/__ffs.h \
 			 ls/bitops/__fls.h \
 			 ls/bitops/atomic.h \
