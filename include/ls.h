@@ -40,6 +40,7 @@ extern "C" {
 #include <ls/avltree.h>
 #include <ls/file.h>
 #include <ls/csv.h>
+#include <ls/daemon.h>
 
 #ifdef __cplusplus
 }

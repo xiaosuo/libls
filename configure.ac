@@ -25,7 +25,7 @@ AC_SUBST(LIBSYSTEMD_DAEMON_CFLAGS)
 AC_SUBST(LIBSYSTEMD_DAEMON_LIBS)
 
 # Checks for header files.
-AC_CHECK_HEADERS([limits.h stddef.h stdint.h stdlib.h string.h strings.h sys/param.h])
+AC_CHECK_HEADERS([fcntl.h limits.h stddef.h stdint.h stdlib.h string.h strings.h sys/file.h sys/param.h unistd.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_HEADER_STDBOOL
@@ -37,9 +37,10 @@ AC_TYPE_UINT64_T
 AC_TYPE_UINT8_T
 
 # Checks for library functions.
+AC_FUNC_FORK
 AC_FUNC_MALLOC
 AC_FUNC_REALLOC
-AC_CHECK_FUNCS([isascii memchr memset strchr strdup strndup strrchr])
+AC_CHECK_FUNCS([dup2 ftruncate isascii memchr memset setenv strchr strdup strndup strrchr])
 
 AC_CONFIG_FILES([Makefile
 		 libls.pc

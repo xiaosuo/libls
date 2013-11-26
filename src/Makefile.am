@@ -12,5 +12,6 @@ libls_la_SOURCES = \
 		   ini.c \
 		   avltree.c \
 		   file.c \
-		   csv.c
+		   csv.c \
+		   daemon.c
 libls_la_LDFLAGS = -version-info 0:0:0

@@ -9,7 +9,8 @@ noinst_PROGRAMS = \
 		  pr \
 		  avltree \
 		  file \
-		  csv
+		  csv \
+		  daemon
 
 list_SOURCES = list.c
 
@@ -24,6 +25,8 @@ avltree_SOURCES = avltree.c
 file_SOURCES = file.c
 
 csv_SOURCES = csv.c
+
+daemon_SOURCES = daemon.c
 
 EXTRA_DIST = \
 	     sample.ini \
