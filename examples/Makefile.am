@@ -10,7 +10,8 @@ noinst_PROGRAMS = \
 		  avltree \
 		  file \
 		  csv \
-		  daemon
+		  daemon \
+		  heap
 
 list_SOURCES = list.c
 
@@ -27,6 +28,8 @@ file_SOURCES = file.c
 csv_SOURCES = csv.c
 
 daemon_SOURCES = daemon.c
+
+heap_SOURCES = heap.c
 
 EXTRA_DIST = \
 	     sample.ini \

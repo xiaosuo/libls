@@ -17,6 +17,7 @@ nobase_include_HEADERS = \
 			 ls/file.h \
 			 ls/csv.h \
 			 ls/daemon.h \
+			 ls/heap.h \
 			 ls/bitops/__ffs.h \
 			 ls/bitops/__fls.h \
 			 ls/bitops/atomic.h \

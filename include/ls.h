@@ -41,6 +41,7 @@ extern "C" {
 #include <ls/file.h>
 #include <ls/csv.h>
 #include <ls/daemon.h>
+#include <ls/heap.h>
 
 #ifdef __cplusplus
 }
