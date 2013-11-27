@@ -208,7 +208,9 @@ void daemon_notify(int notify_fd, int error)
 	int rc;
 
 	rc = write(notify_fd, &error, sizeof(error));
-	if (error || rc < 0)
+	if (rc < 0)
+		exit(EXIT_FAILURE);
+	if (error)
 		_exit(EXIT_FAILURE);
 	close(notify_fd);
 }
