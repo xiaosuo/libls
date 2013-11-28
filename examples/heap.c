@@ -7,7 +7,7 @@ struct num_node {
 
 };
 
-static int num_cmp(const struct heap_node *node, const struct heap_node *node2)
+static inline int num_cmp(const struct heap_node *node, const struct heap_node *node2)
 {
 	int n, n2;
 
