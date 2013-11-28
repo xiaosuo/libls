@@ -51,7 +51,7 @@ static inline void heap_pull_up(struct heap *heap, struct heap_node *node,
 
 	while (node->idx > 0) {
 		parent = heap->node[(node->idx - 1) / 2];
-		if (cmp(node, parent) >= 0)
+		if (cmp(node, parent) <= 0)
 			break;
 		heap_swap(heap, node, parent);
 	}
@@ -60,7 +60,7 @@ static inline void heap_pull_up(struct heap *heap, struct heap_node *node,
 static inline void heap_push_down(struct heap *heap, struct heap_node *node,
 		heap_cmp_func_t *cmp)
 {
-	struct heap_node *child, *min;
+	struct heap_node *child, *max;
 	unsigned int idx;
 
 	while (1) {
@@ -68,18 +68,18 @@ static inline void heap_push_down(struct heap *heap, struct heap_node *node,
 		if (idx >= heap->len)
 			return;
 		child = heap->node[idx];
-		if (cmp(child, node) < 0)
-			min = child;
+		if (cmp(child, node) > 0)
+			max = child;
 		else
-			min = node;
+			max = node;
 		if (++idx < heap->len) {
 			child = heap->node[idx];
-			if (cmp(child, min) < 0)
-				min = child;
+			if (cmp(child, max) > 0)
+				max = child;
 		}
-		if (min == node)
+		if (max == node)
 			break;
-		heap_swap(heap, node, min);
+		heap_swap(heap, node, max);
 	}
 }
 
@@ -119,7 +119,7 @@ static inline void heap_delete(struct heap *heap, struct heap_node *node,
 		heap->node[node->idx] = last;
 		last->idx = node->idx;
 		if (last->idx > 0 &&
-		    cmp(last, heap->node[(last->idx - 1) / 2]) < 0)
+		    cmp(last, heap->node[(last->idx - 1) / 2]) > 0)
 			heap_pull_up(heap, last, cmp);
 		else
 			heap_push_down(heap, last, cmp);
