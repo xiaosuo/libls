@@ -10,8 +10,8 @@ int no_pr(const char *fmt, ...)
 	return 0;
 }
 
-#define pr(fmt, args...) \
-	fprintf(stderr, fmt, ##args)
+__attribute__((format(printf, 1, 2)))
+extern int (*pr)(const char *fmt, ...);
 
 #define pr_emerg(fmt, args...) \
 	pr(SD_EMERG fmt, ##args)
