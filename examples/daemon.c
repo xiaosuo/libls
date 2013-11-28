@@ -4,11 +4,8 @@
 
 static void my_puts(const char *str)
 {
-	if (str) {
-		int len = strlen(str);
-
-		write(1, str, len);
-	}
+	if (str)
+		pr_info("%s", str);
 }
 
 int main(int argc, char *argv[])

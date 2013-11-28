@@ -10,12 +10,15 @@
 #include <pwd.h>
 #include <grp.h>
 #include <string.h>
+#include <syslog.h>
+#include <ctype.h>
 
 #include <sys/resource.h>
 #include <sys/stat.h>
 #include <sys/file.h>
 
 #include <ls/daemon.h>
+#include <ls/pr.h>
 
 #define DAEMON_ENV_PATH	"/usr/local/sbin:/usr/local/bin:" \
 			"/usr/sbin:/usr/bin:/sbin:/bin"
@@ -100,24 +103,13 @@ err:
 	return -1;
 }
 
-static int save_pid(const char *fmt, va_list ap)
+static int save_pid(const char *ident)
 {
 	char buf[PATH_MAX];
 	int rc, fd, len;
 
-	len = snprintf(buf, sizeof(buf), "%s", "/var/run/");
+	len = snprintf(buf, sizeof(buf), "/var/run/%s.pid", ident);
 	if (len < 0 || len >= sizeof(buf)) {
-		errno = EINVAL;
-		goto err;
-	}
-	rc = vsnprintf(buf + len, sizeof(buf) - len, fmt, ap);
-	if (rc < 0 || rc + len >= sizeof(buf)) {
-		errno = EINVAL;
-		goto err;
-	}
-	len += rc;
-	rc = snprintf(buf + len, sizeof(buf) - len, "%s", ".pid");
-	if (rc < 0 || rc + len >= sizeof(buf)) {
 		errno = EINVAL;
 		goto err;
 	}
@@ -148,9 +140,32 @@ err:
 	return -1;
 }
 
+static int daemon_pr(const char *fmt, ...)
+{
+	va_list ap;
+	int pri = LOG_WARNING;
+
+	/* Suppose the priority only appears in fmt. */
+	if (fmt[0] == '<' && isdigit(fmt[1]) && fmt[2] == '>') {
+		int n = fmt[1] - '0';
+
+		if (n <= 7) {
+			pri = n;
+			fmt += 3;
+		}
+	}
+
+	va_start(ap, fmt);
+	vsyslog(pri, fmt, ap);
+	va_end(ap);
+
+	return 0;
+}
+
 static int first_child(int notify_fd, const char *fmt, va_list ap)
 {
 	int rc, fd, error;
+	char *ident;
 
 	if (setsid() == (pid_t)-1)
 		goto err;
@@ -192,11 +207,17 @@ static int first_child(int notify_fd, const char *fmt, va_list ap)
 	if (chdir("/"))
 		goto err;
 
-	rc = save_pid(fmt, ap);
-	if (rc)
+	if (vasprintf(&ident, fmt, ap) < 0)
 		goto err;
+	rc = save_pid(ident);
+	if (rc)
+		goto err2;
+	openlog(ident, LOG_PID, LOG_DAEMON);
+	pr = daemon_pr;
 
 	return notify_fd;
+err2:
+	free(ident);
 err:
 	error = errno;
 	write(notify_fd, &error, sizeof(error));
