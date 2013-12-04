@@ -79,6 +79,15 @@ static inline void heap_push_down(struct heap *heap, struct heap_node *node,
 	}
 }
 
+static inline void heap_adjust(struct heap *heap, struct heap_node *node,
+		heap_cmp_func_t *cmp)
+{
+	if (node->idx > 0 && cmp(node, heap->node[(node->idx - 1) / 2]) >= 0)
+		heap_pull_up(heap, node, cmp);
+	else
+		heap_push_down(heap, node, cmp);
+}
+
 static inline int heap_insert(struct heap *heap, struct heap_node *node,
 		heap_cmp_func_t *cmp)
 {
