@@ -35,13 +35,9 @@ static inline void heap_destroy(struct heap *heap)
 static inline void heap_swap(struct heap *heap, struct heap_node *node,
 		struct heap_node *node2)
 {
-	unsigned int idx;
-
 	heap->node[node->idx] = node2;
 	heap->node[node2->idx] = node;
-	idx = node->idx;
-	node->idx = node2->idx;
-	node2->idx = idx;
+	swap(node->idx, node2->idx);
 }
 
 static inline void heap_pull_up(struct heap *heap, struct heap_node *node,
