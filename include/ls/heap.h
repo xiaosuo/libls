@@ -113,16 +113,28 @@ static inline struct heap_node *heap_top(struct heap *heap)
 static inline void heap_delete(struct heap *heap, struct heap_node *node,
 		heap_cmp_func_t *cmp)
 {
-	struct heap_node *last = heap->node[--heap->len];
+	unsigned int p = node->idx, c;
+	struct heap_node *last;
 
-	if (node != last) {
-		heap->node[node->idx] = last;
-		last->idx = node->idx;
-		if (last->idx > 0 &&
-		    cmp(last, heap->node[(last->idx - 1) / 2]) > 0)
-			heap_pull_up(heap, last, cmp);
-		else
-			heap_push_down(heap, last, cmp);
+	if (--heap->len == 0)
+		return;
+	last = heap->node[heap->len];
+	if (last == node)
+		return;
+	while (1) {
+		c = p * 2 + 1;
+		if (c > heap->len)
+			break;
+		node = heap->node[c];
+		if (++c <= heap->len && cmp(heap->node[c], node) > 0)
+			node = heap->node[c];
+		heap->node[p] = node;
+		swap(node->idx, p);
+	}
+	if (last != node) {
+		heap->node[p] = last;
+		last->idx = p;
+		heap_pull_up(heap, last, cmp);
 	}
 }
 
