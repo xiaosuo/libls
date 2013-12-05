@@ -25,7 +25,7 @@ AC_SUBST(LIBSYSTEMD_DAEMON_CFLAGS)
 AC_SUBST(LIBSYSTEMD_DAEMON_LIBS)
 
 # Checks for header files.
-AC_CHECK_HEADERS([fcntl.h limits.h stddef.h stdint.h stdlib.h string.h strings.h sys/file.h sys/param.h unistd.h])
+AC_CHECK_HEADERS([fcntl.h limits.h stddef.h stdint.h stdlib.h string.h strings.h sys/file.h sys/param.h sys/time.h syslog.h unistd.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_HEADER_STDBOOL
@@ -40,12 +40,14 @@ AC_TYPE_UINT8_T
 AC_FUNC_FORK
 AC_FUNC_MALLOC
 AC_FUNC_REALLOC
-AC_CHECK_FUNCS([dup2 ftruncate isascii memchr memset setenv strchr strdup strndup strrchr])
+AC_CHECK_FUNCS([dup2 ftruncate gettimeofday isascii memchr memset setenv strchr strdup strndup strrchr])
 
 AC_CONFIG_FILES([Makefile
 		 libls.pc
                  include/Makefile
 		 examples/Makefile
+		 benchmark/Makefile
+		 benchmark/prio_queue/Makefile
                  src/Makefile])
 AC_OUTPUT
 AC_MSG_RESULT([

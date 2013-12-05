@@ -3,7 +3,8 @@ ACLOCAL_AMFLAGS = -I m4 ${ACLOCAL_FLAGS}
 SUBDIRS = \
 	  src \
 	  include \
-	  examples
+	  examples \
+	  benchmark
 
 dist_doc_DATA = \
 		README.md \
