@@ -42,6 +42,7 @@ extern "C" {
 #include <ls/csv.h>
 #include <ls/daemon.h>
 #include <ls/heap.h>
+#include <ls/prio_tree.h>
 
 #ifdef __cplusplus
 }
