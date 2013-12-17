@@ -20,9 +20,6 @@ m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
 LT_INIT
 
 # Checks for libraries.
-PKG_CHECK_MODULES([LIBSYSTEMD_DAEMON], [libsystemd-daemon])
-AC_SUBST(LIBSYSTEMD_DAEMON_CFLAGS)
-AC_SUBST(LIBSYSTEMD_DAEMON_LIBS)
 
 # Checks for header files.
 AC_CHECK_HEADERS([fcntl.h limits.h stddef.h stdint.h stdlib.h string.h strings.h sys/file.h sys/param.h sys/time.h syslog.h unistd.h])
@@ -66,6 +63,4 @@ AC_MSG_RESULT([
 	CFLAGS:				${CFLAGS}
 	CPPFLAGS:			${CPPFLAGS}
 	LDFLAGS:			${LDFLAGS}
-	LIBSYSTEMD_DAEMON_CFLAGS:	${LIBSYSTEMD_DAEMON_CFLAGS}
-	LIBSYSTEMD_DAEMON_LIBS:		${LIBSYSTEMD_DAEMON_LIBS}
 ])
