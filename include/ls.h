@@ -43,6 +43,7 @@ extern "C" {
 #include <ls/daemon.h>
 #include <ls/heap.h>
 #include <ls/prio_tree.h>
+#include <ls/unit_test.h>
 
 #ifdef __cplusplus
 }
