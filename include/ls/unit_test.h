@@ -4,7 +4,7 @@
 #ifdef NDEBUG
 #define UNIT_TEST(priority) static __attribute__((unused))
 #else
-#define UNIT_TEST(priority) static __attribute__((constructor(priority)))
+#define UNIT_TEST(priority) static __attribute__((constructor(priority + 100)))
 #endif
 
 #endif /* __LS_UNIT_TEST_H */
