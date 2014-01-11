@@ -25,7 +25,7 @@ static inline int num_cmp(const struct rb_node *node,
 		return 0;
 }
 
-static inline void rb_insert(struct rb_node *node, struct rb_root *root)
+static inline void my_rb_insert(struct rb_node *node, struct rb_root *root)
 {
 	struct rb_node **new = &(root->rb_node), *parent = NULL;
 	int rc;
@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
 		if (!nn)
 			break;
 		nn->num = rand();
-		rb_insert(&nn->node, &root);
+		my_rb_insert(&nn->node, &root);
 	}
 	gettimeofday(&end, NULL);
 	printf("num: %d\n", i);

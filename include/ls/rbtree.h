@@ -104,4 +104,51 @@ static inline void rb_link_node(struct rb_node * node, struct rb_node * parent,
 		n = rb_entry(rb_next_postorder(&pos->field), \
 			typeof(*pos), field))
 
+static inline struct rb_node *rb_find(struct rb_root *root,
+		int (*cmp)(const void *key, struct rb_node *node),
+		const void *key)
+{
+	struct rb_node *node = root->rb_node;
+	int rc;
+
+	while (node) {
+		rc = cmp(key, node);
+		if (rc < 0)
+			node = node->rb_left;
+		else if (rc > 0)
+			node = node->rb_right;
+		else
+			return node;
+	}
+
+	return NULL;
+}
+
+static inline struct rb_node *rb_insert(struct rb_root *root,
+		int (*cmp)(const void *key, struct rb_node *node),
+		const void *key, struct rb_node *node)
+{
+	struct rb_node **pc= &root->rb_node, *parent = NULL;
+	int rc;
+
+	while (*pc) {
+		parent = *pc;
+		rc = cmp(key, parent);
+		if (rc < 0)
+			pc = &parent->rb_left;
+		else if (rc > 0)
+			pc = &parent->rb_right;
+		else
+			return parent;
+	}
+
+	rb_link_node(node, parent, pc);
+	rb_insert_color(node, root);
+
+	return NULL;
+}
+
+#define rb_for_each(pos, root) \
+	for (pos = rb_first(root); pos; pos = rb_next(pos))
+
 #endif	/* __LS_RBTREE_H */
