@@ -1,7 +1,12 @@
+#include <config.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <pthread.h>
 #include <signal.h>
+
+#ifndef HAVE_PTHREAD_SIGMASK
+#define pthread_sigmask(how, set, oldset) sigprocmask(how, set, oldset)
+#endif /* HAVE_PTHREAD_SIGMASK */
 
 static pthread_mutex_t global_sync_lock = PTHREAD_MUTEX_INITIALIZER;
 

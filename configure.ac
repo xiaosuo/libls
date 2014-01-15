@@ -37,7 +37,8 @@ AC_TYPE_UINT8_T
 AC_FUNC_FORK
 AC_FUNC_MALLOC
 AC_FUNC_REALLOC
-AC_CHECK_FUNCS([dup2 ftruncate gettimeofday isascii memchr memset setenv strchr strdup strndup strrchr])
+AC_SEARCH_LIBS([pthread_create], [pthread])
+AC_CHECK_FUNCS([dup2 ftruncate gettimeofday isascii memchr memset pthread_sigmask setenv strchr strdup strndup strrchr])
 
 AC_CONFIG_FILES([Makefile
 		 libls.pc
