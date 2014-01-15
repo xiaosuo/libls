@@ -73,7 +73,7 @@ err:
 
 static int close_extra_fds(void)
 {
-	int *fda, fda_len;
+	int *fda = NULL, fda_len = 0;
 
 	if (get_extra_fds(&fda, &fda_len)) {
 		struct rlimit rlim;

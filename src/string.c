@@ -1,3 +1,5 @@
+#include <config.h>
+
 #include <ls/string.h>
 #include <ls/stddef.h>
 
