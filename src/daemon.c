@@ -220,7 +220,8 @@ err2:
 	free(ident);
 err:
 	error = errno;
-	write(notify_fd, &error, sizeof(error));
+	if (write(notify_fd, &error, sizeof(error)))
+		/* do nothing */;
 	_exit(EXIT_FAILURE);
 }
 
