@@ -44,6 +44,7 @@ extern "C" {
 #include <ls/heap.h>
 #include <ls/prio_tree.h>
 #include <ls/unit_test.h>
+#include <ls/base64.h>
 
 #ifdef __cplusplus
 }

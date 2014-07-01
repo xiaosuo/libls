@@ -16,5 +16,6 @@ libls_la_SOURCES = \
 		   daemon.c \
 		   pr.c \
 		   prio_tree.c \
-		   compiler.c
+		   compiler.c \
+		   base64.c
 libls_la_LDFLAGS = -version-info 0:0:0

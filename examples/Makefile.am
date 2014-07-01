@@ -11,7 +11,8 @@ noinst_PROGRAMS = \
 		  file \
 		  csv \
 		  daemon \
-		  heap
+		  heap \
+		  base64
 
 list_SOURCES = list.c
 
@@ -30,6 +31,8 @@ csv_SOURCES = csv.c
 daemon_SOURCES = daemon.c
 
 heap_SOURCES = heap.c
+
+base64_SOURCES = base64.c
 
 EXTRA_DIST = \
 	     sample.ini \
