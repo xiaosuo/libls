@@ -1,5 +1,5 @@
-#ifndef __PRIO_TREE_H
-#define __PRIO_TREE_H
+#ifndef __LS_PRIO_TREE_H
+#define __LS_PRIO_TREE_H
 
 #include <ls/stddef.h>
 
@@ -29,4 +29,4 @@ void prio_adjust(struct prio_node *node, struct prio_root *root,
 void prio_erase(struct prio_node *node, struct prio_root *root,
 		prio_cmp_func_t *cmp);
 
-#endif /* __PRIO_TREE_H */
+#endif /* __LS_PRIO_TREE_H */
