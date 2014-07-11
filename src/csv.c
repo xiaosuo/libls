@@ -88,7 +88,7 @@ static int parse_csv(char *line, unsigned int len, void *user)
 				if (len > 0) {
 					if (line[len - 1] == '\n') {
 						line[--len] = '\0';
-						if (line > 0 &&
+						if (len > 0 &&
 						    line[len - 1] == '\r')
 							line[--len] = '\0';
 					} else if (line[len - 1] == '\r') {
