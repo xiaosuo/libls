@@ -22,12 +22,13 @@ LT_INIT
 # Checks for libraries.
 
 # Checks for header files.
-AC_CHECK_HEADERS([fcntl.h limits.h stddef.h stdint.h stdlib.h string.h strings.h sys/file.h sys/param.h sys/time.h syslog.h unistd.h])
+AC_CHECK_HEADERS([fcntl.h limits.h netinet/in.h stddef.h stdint.h stdlib.h string.h strings.h sys/file.h sys/param.h sys/time.h syslog.h unistd.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_HEADER_STDBOOL
 AC_C_INLINE
 AC_TYPE_SIZE_T
+AC_TYPE_SSIZE_T
 AC_TYPE_UINT16_T
 AC_TYPE_UINT32_T
 AC_TYPE_UINT64_T
@@ -38,7 +39,7 @@ AC_FUNC_FORK
 AC_FUNC_MALLOC
 AC_FUNC_REALLOC
 AC_SEARCH_LIBS([pthread_create], [pthread])
-AC_CHECK_FUNCS([dup2 ftruncate gettimeofday isascii memchr memset pthread_sigmask setenv strchr strdup strndup strrchr])
+AC_CHECK_FUNCS([dup2 ftruncate gettimeofday isascii memchr memset mkfifo rmdir setenv socket strchr strdup strndup strrchr])
 
 AC_CONFIG_FILES([Makefile
 		 libls.pc

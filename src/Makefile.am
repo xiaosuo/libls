@@ -19,5 +19,6 @@ libls_la_SOURCES = \
 		   compiler.c \
 		   base64.c \
 		   url_encode.c \
-		   percent_encode.c
+		   percent_encode.c \
+		   evt.c
 libls_la_LDFLAGS = -version-info 0:0:0
