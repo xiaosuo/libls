@@ -383,10 +383,12 @@ void free_evt_loop(struct evt_loop *loop)
 {
 	if (loop) {
 		int fd;
+#ifndef NDEBUG
 		struct ilc *ilc;
 
 		/* Make sure no pending ILC, otherwise memory may leak. */
 		assert(read(loop->ilc_fd, &ilc, sizeof(ilc)) < 0);
+#endif
 		del_evt(loop, loop->ilc_fd, EVT_READ);
 
 		/* All the fds should be closed */

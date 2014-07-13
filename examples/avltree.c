@@ -87,10 +87,10 @@ static int check_height(struct avl_node *node)
 	return 1 + MAX(left_height, right_height);
 }
 
-static int check_inorder(struct avl_root *root)
+int check_inorder(struct avl_root *root)
 {
 	struct avl_node *node;
-	int n = 0, num = 0;
+	int n = 0, num __attribute__((unused)) = 0;
 	struct num_node *nm;
 
 	for (node = avl_first(root); node; node = avl_next(node)) {
@@ -103,10 +103,10 @@ static int check_inorder(struct avl_root *root)
 	return n;
 }
 
-static int check_revorder(struct avl_root *root)
+int check_revorder(struct avl_root *root)
 {
 	struct avl_node *node;
-	int n = 0, num = 0;
+	int n = 0, num __attribute__((unused)) = 0;
 	struct num_node *nm;
 
 	for (node = avl_last(root); node; node = avl_prev(node)) {
@@ -119,7 +119,7 @@ static int check_revorder(struct avl_root *root)
 	return n;
 }
 
-static int check_postorder(struct avl_root *root)
+int check_postorder(struct avl_root *root)
 {
 	struct num_node *node, *tmp;
 	int n = 0;
