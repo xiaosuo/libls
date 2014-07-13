@@ -21,6 +21,8 @@ nobase_include_HEADERS = \
 			 ls/prio_tree.h \
 			 ls/unit_test.h \
 			 ls/base64.h \
+			 ls/url_encode.h \
+			 ls/percent_encode.h \
 			 ls/bitops/__ffs.h \
 			 ls/bitops/__fls.h \
 			 ls/bitops/atomic.h \

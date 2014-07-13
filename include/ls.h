@@ -45,6 +45,8 @@ extern "C" {
 #include <ls/prio_tree.h>
 #include <ls/unit_test.h>
 #include <ls/base64.h>
+#include <ls/url_encode.h>
+#include <ls/percent_encode.h>
 
 #ifdef __cplusplus
 }
