@@ -49,6 +49,14 @@ struct loop {
 };
 
 int add_io(struct loop *loop, int fd, enum IO event, struct io *io);
+static inline int add_i(struct loop *loop, int fd, struct io *io)
+{
+	return add_io(loop, fd, IO_READ, io);
+}
+static inline int add_o(struct loop *loop, int fd, struct io *io)
+{
+	return add_io(loop, fd, IO_WRITE, io);
+}
 void del_io(struct loop *loop, int fd, enum IO event);
 void close_io(struct loop *loop, int fd);
 

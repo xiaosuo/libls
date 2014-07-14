@@ -59,7 +59,7 @@ void ilc_callback(struct loop *loop, struct ilc *ilc)
 		goto err;
 	conn->sock = req->sock;
 	conn->io.callback = read_data;
-	if (add_io(loop, conn->sock, IO_READ, &conn->io))
+	if (add_i(loop, conn->sock, &conn->io))
 		goto err2;
 	list_add_tail(&conn->link, &req->serv->conn_list);
 	free(req);
@@ -162,7 +162,7 @@ int main()
 		return 1;
 	}
 	serv.io.callback = dist_conn;
-	if (add_io(serv.loop, serv.sock, IO_READ, &serv.io)) {
+	if (add_i(serv.loop, serv.sock, &serv.io)) {
 		pr_err("Failed to monitor the read event of the server\n");
 		return 1;
 	}
