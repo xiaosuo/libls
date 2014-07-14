@@ -47,7 +47,7 @@ extern "C" {
 #include <ls/base64.h>
 #include <ls/url_encode.h>
 #include <ls/percent_encode.h>
-#include <ls/evt.h>
+#include <ls/loop.h>
 
 #ifdef __cplusplus
 }

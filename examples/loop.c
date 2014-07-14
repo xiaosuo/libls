@@ -7,9 +7,9 @@
 
 struct server {
 	int		sock;
-	struct evt_loop	*loop;
-	struct evt_loop	*conn_loop;
-	struct evt	evt;
+	struct loop	*loop;
+	struct loop	*conn_loop;
+	struct io	io;
 	struct timer	timer;
 	pthread_t	conn_tid;
 	struct list_head	conn_list;
@@ -23,7 +23,7 @@ struct dist_req {
 
 struct conn {
 	int		sock;
-	struct evt	evt;
+	struct io	io;
 	struct list_head	link;
 };
 
@@ -32,7 +32,7 @@ void set_nonblocking(int fd)
 	fcntl(fd, F_SETFL, fcntl(fd, F_GETFL) | O_NONBLOCK);
 }
 
-void read_data(struct evt_loop *loop, int fd, struct evt *ev)
+void read_data(struct loop *loop, int fd, struct io *io)
 {
 	char buf[2048];
 	ssize_t len = read(fd, buf, sizeof(buf));
@@ -41,16 +41,16 @@ void read_data(struct evt_loop *loop, int fd, struct evt *ev)
 		if (write(fd, buf, len) != len)
 			pr_warn("some data is missing\n");
 	} else if (len == 0) {
-		struct conn *conn = container_of(ev, struct conn, evt);
+		struct conn *conn = container_of(io, struct conn, io);
 
-		del_evt(loop, fd, EVT_READ);
+		del_io(loop, fd, IO_READ);
 		close(fd);
 		list_del(&conn->link);
 		free(conn);
 	}
 }
 
-void ilc_callback(struct evt_loop *loop, struct ilc *ilc)
+void ilc_callback(struct loop *loop, struct ilc *ilc)
 {
 	struct dist_req *req = container_of(ilc, struct dist_req, ilc);
 	struct conn *conn = malloc(sizeof(*conn));
@@ -58,8 +58,8 @@ void ilc_callback(struct evt_loop *loop, struct ilc *ilc)
 	if (!conn)
 		goto err;
 	conn->sock = req->sock;
-	conn->evt.callback = read_data;
-	if (add_evt(loop, conn->sock, EVT_READ, &conn->evt))
+	conn->io.callback = read_data;
+	if (add_io(loop, conn->sock, IO_READ, &conn->io))
 		goto err2;
 	list_add_tail(&conn->link, &req->serv->conn_list);
 	free(req);
@@ -72,11 +72,11 @@ err:
 	free(req);
 }
 
-void dist_conn(struct evt_loop *loop, int fd, struct evt *ev)
+void dist_conn(struct loop *loop, int fd, struct io *io)
 {
 	int sock = accept(fd, NULL, NULL);
 	struct dist_req *req;
-	struct server *serv = container_of(ev, struct server, evt);
+	struct server *serv = container_of(io, struct server, io);
 
 	if (sock < 0)
 		goto err;
@@ -102,19 +102,19 @@ err:
 
 void *conn_thread(void *args)
 {
-	struct evt_loop *loop = args;
+	struct loop *loop = args;
 
-	run_evt_loop(loop);
+	run_loop(loop);
 
 	return NULL;
 }
 
-void stop_service(struct evt_loop *loop, struct timer *timer)
+void stop_service(struct loop *loop, struct timer *timer)
 {
 	struct server *serv = container_of(timer, struct server, timer);
 
-	stop_remote_evt_loop(serv->conn_loop);
-	stop_evt_loop(loop);
+	stop_remote_loop(serv->conn_loop);
+	stop_loop(loop);
 }
 
 int main()
@@ -146,12 +146,12 @@ int main()
 		return 1;
 	}
 
-	serv.loop = alloc_evt_loop(10);
+	serv.loop = alloc_loop(10);
 	if (!serv.loop) {
 		pr_err("Failed to allocate the event loop for the server\n");
 		return 1;
 	}
-	serv.conn_loop = alloc_evt_loop(10);
+	serv.conn_loop = alloc_loop(10);
 	if (!serv.conn_loop) {
 		pr_err("Failed to allocate the event loop for connections\n");
 		return 1;
@@ -161,8 +161,8 @@ int main()
 		pr_err("Failed to create a separated thread for connections\n");
 		return 1;
 	}
-	serv.evt.callback = dist_conn;
-	if (add_evt(serv.loop, serv.sock, EVT_READ, &serv.evt)) {
+	serv.io.callback = dist_conn;
+	if (add_io(serv.loop, serv.sock, IO_READ, &serv.io)) {
 		pr_err("Failed to monitor the read event of the server\n");
 		return 1;
 	}
@@ -170,17 +170,17 @@ int main()
 	init_timer(&serv.timer);
 	serv.timer.callback = stop_service;
 	add_timeout(serv.loop, &serv.timer, 60000);
-	run_evt_loop(serv.loop);
+	run_loop(serv.loop);
 	pthread_join(serv.conn_tid, NULL);
 	list_for_each_entry_safe(conn, next, &serv.conn_list, link) {
-		close_evt(serv.conn_loop, conn->sock);
+		close_io(serv.conn_loop, conn->sock);
 		close(conn->sock);
 		list_del(&conn->link);
 	}
-	del_evt(serv.loop, serv.sock, EVT_READ);
+	del_io(serv.loop, serv.sock, IO_READ);
 	close(serv.sock);
-	free_evt_loop(serv.conn_loop);
-	free_evt_loop(serv.loop);
+	free_loop(serv.conn_loop);
+	free_loop(serv.loop);
 
 	return 0;
 }

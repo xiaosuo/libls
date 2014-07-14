@@ -1,11 +1,11 @@
-#include <ls/evt.h>
+#include <ls/loop.h>
 
 #include <unistd.h>
 #include <fcntl.h>
 
 #include <sys/stat.h>
 
-void add_timer(struct evt_loop *loop, struct timer *timer)
+void add_timer(struct loop *loop, struct timer *timer)
 {
 	struct rb_node **p;
 	struct rb_node *parent = NULL;
@@ -32,7 +32,7 @@ void add_timer(struct evt_loop *loop, struct timer *timer)
 		loop->next = timer;
 }
 
-void add_timeout(struct evt_loop *loop, struct timer *timer, unsigned int ms)
+void add_timeout(struct loop *loop, struct timer *timer, unsigned int ms)
 {
 	struct timeval delta;
 
@@ -46,7 +46,7 @@ void add_timeout(struct evt_loop *loop, struct timer *timer, unsigned int ms)
 	add_timer(loop, timer);
 }
 
-void del_timer(struct evt_loop *loop, struct timer *timer)
+void del_timer(struct loop *loop, struct timer *timer)
 {
 	assert(loop);
 	assert(timer);
@@ -64,7 +64,7 @@ void del_timer(struct evt_loop *loop, struct timer *timer)
 	RB_CLEAR_NODE(&timer->node);
 }
 
-static int __run_timers(struct evt_loop *loop)
+static int __run_timers(struct loop *loop)
 {
 	struct timer *timer;
 
@@ -98,20 +98,20 @@ static int __run_timers(struct evt_loop *loop)
 	return -1;
 }
 
-int add_evt(struct evt_loop *loop, int fd, enum EVT event, struct evt *ev)
+int add_io(struct loop *loop, int fd, enum IO event, struct io *io)
 {
 	int op;
 	struct epoll_event eev;
 
 	assert(loop);
 	assert(fd >= 0);
-	assert(event == EVT_READ || event == EVT_WRITE);
-	assert(ev);
-	assert(ev->callback);
+	assert(event == IO_READ || event == IO_WRITE);
+	assert(io);
+	assert(io->callback);
 
 	if (fd >= loop->fd_size) {
 		size_t new_size = loop->fd_size * 2;
-		struct evt_fd *new_fd;
+		struct io_fd *new_fd;
 
 		new_fd = realloc(loop->fd, new_size * sizeof(*loop->fd));
 		if (!new_fd)
@@ -122,18 +122,18 @@ int add_evt(struct evt_loop *loop, int fd, enum EVT event, struct evt *ev)
 		loop->fd_size = new_size;
 	}
 
-	assert(!loop->fd[fd].evt[event]);
-	if (loop->fd[fd].evt[!event]) {
+	assert(!loop->fd[fd].io[event]);
+	if (loop->fd[fd].io[!event]) {
 		op = EPOLL_CTL_MOD;
 		eev.events = EPOLLIN | EPOLLOUT;
 	} else {
 		op = EPOLL_CTL_ADD;
-		eev.events = event == EVT_READ ? EPOLLIN : EPOLLOUT;
+		eev.events = event == IO_READ ? EPOLLIN : EPOLLOUT;
 	}
 	eev.data.fd = fd;
 	if (epoll_ctl(loop->ep_fd, op, fd, &eev) < 0)
 		goto err;
-	loop->fd[fd].evt[event] = ev;
+	loop->fd[fd].io[event] = io;
 	if (op == EPOLL_CTL_ADD)
 		loop->activated++;
 
@@ -142,40 +142,40 @@ err:
 	return -1;
 }
 
-void del_evt(struct evt_loop *loop, int fd, enum EVT event)
+void del_io(struct loop *loop, int fd, enum IO event)
 {
 	assert(loop);
 	assert(fd >= 0);
-	assert(event == EVT_READ || event == EVT_WRITE);
+	assert(event == IO_READ || event == IO_WRITE);
 
-	if (fd < loop->fd_size && loop->fd[fd].evt[event]) {
+	if (fd < loop->fd_size && loop->fd[fd].io[event]) {
 		int op;
 		struct epoll_event eev;
 
-		if (loop->fd[fd].evt[!event]) {
+		if (loop->fd[fd].io[!event]) {
 			op = EPOLL_CTL_MOD;
-			eev.events = event == EVT_READ ? EPOLLOUT : EPOLLIN;
+			eev.events = event == IO_READ ? EPOLLOUT : EPOLLIN;
 			eev.data.fd = fd;
 		} else {
 			op = EPOLL_CTL_DEL;
 		}
 		if (epoll_ctl(loop->ep_fd, op, fd, &eev))
 			abort();
-		loop->fd[fd].evt[event] = NULL;
+		loop->fd[fd].io[event] = NULL;
 		if (op == EPOLL_CTL_DEL)
 			loop->activated--;
 	}
 }
 
-void close_evt(struct evt_loop *loop, int fd)
+void close_io(struct loop *loop, int fd)
 {
 	assert(loop);
 	assert(fd >= 0);
 	
 	if (fd < loop->fd_size &&
-	    (loop->fd[fd].evt[EVT_READ] || loop->fd[fd].evt[EVT_WRITE])) {
-		loop->fd[fd].evt[EVT_READ] = NULL;
-		loop->fd[fd].evt[EVT_WRITE] = NULL;
+	    (loop->fd[fd].io[IO_READ] || loop->fd[fd].io[IO_WRITE])) {
+		loop->fd[fd].io[IO_READ] = NULL;
+		loop->fd[fd].io[IO_WRITE] = NULL;
 		loop->activated--;
 	}
 	/**
@@ -185,7 +185,7 @@ void close_evt(struct evt_loop *loop, int fd)
 	 */
 }
 
-int add_ilc(struct evt_loop *loop, struct ilc *ilc)
+int add_ilc(struct loop *loop, struct ilc *ilc)
 {
 	assert(loop);
 	assert(ilc);
@@ -197,7 +197,7 @@ int add_ilc(struct evt_loop *loop, struct ilc *ilc)
 	return 0;
 }
 
-void run_evt_loop(struct evt_loop *loop)
+void run_loop(struct loop *loop)
 {
 	int eev_num = 0, timeout, i;
 
@@ -210,20 +210,20 @@ void run_evt_loop(struct evt_loop *loop)
 		for (i = 0; i < eev_num; i++) {
 			uint32_t events;
 			int fd;
-			struct evt *evt;
+			struct io *io;
 
 			events = loop->eev[i].events;
 			fd = loop->eev[i].data.fd;
 			if ((events & EPOLLOUT) &&
-			    (evt = loop->fd[fd].evt[EVT_WRITE])) {
-				evt->callback(loop, fd, evt);
+			    (io = loop->fd[fd].io[IO_WRITE])) {
+				io->callback(loop, fd, io);
 				if (loop->stopped)
 					goto out;
 			}
 
 			if ((events & EPOLLIN) &&
-			    (evt = loop->fd[fd].evt[EVT_READ])) {
-				evt->callback(loop, fd, evt);
+			    (io = loop->fd[fd].io[IO_READ])) {
+				io->callback(loop, fd, io);
 				if (loop->stopped)
 					goto out;
 			}
@@ -247,7 +247,7 @@ void run_evt_loop(struct evt_loop *loop)
 	}
 out:
 	/* Fire all the ILC events, otherwise memory may leak. */
-	loop->ilc_evt.callback(loop, loop->ilc_fd, &loop->ilc_evt);
+	loop->ilc_io.callback(loop, loop->ilc_fd, &loop->ilc_io);
 
 	return;
 }
@@ -290,7 +290,7 @@ err:
 	return -1;
 }
 
-static void __ilc_callback(struct evt_loop *loop, int fd, struct evt *ev)
+static void __ilc_callback(struct loop *loop, int fd, struct io *io)
 {
 	ssize_t len;
 
@@ -314,9 +314,9 @@ static void __ilc_callback(struct evt_loop *loop, int fd, struct evt *ev)
 	}
 }
 
-struct evt_loop *alloc_evt_loop(size_t size)
+struct loop *alloc_loop(size_t size)
 {
-	struct evt_loop *loop;
+	struct loop *loop;
        
 	assert(size > 0);
 
@@ -358,8 +358,8 @@ struct evt_loop *alloc_evt_loop(size_t size)
 	loop->ilc = malloc(loop->ilc_size);
 	if (!loop->ilc)
 		goto err6;
-	loop->ilc_evt.callback = __ilc_callback;
-	if (add_evt(loop, loop->ilc_fd, EVT_READ, &loop->ilc_evt))
+	loop->ilc_io.callback = __ilc_callback;
+	if (add_io(loop, loop->ilc_fd, IO_READ, &loop->ilc_io))
 		goto err7;
 
 	return loop;
@@ -379,7 +379,7 @@ err:
 	return NULL;
 }
 
-void free_evt_loop(struct evt_loop *loop)
+void free_loop(struct loop *loop)
 {
 	if (loop) {
 		int fd;
@@ -389,13 +389,13 @@ void free_evt_loop(struct evt_loop *loop)
 		/* Make sure no pending ILC, otherwise memory may leak. */
 		assert(read(loop->ilc_fd, &ilc, sizeof(ilc)) < 0);
 #endif
-		del_evt(loop, loop->ilc_fd, EVT_READ);
+		del_io(loop, loop->ilc_fd, IO_READ);
 
 		/* All the fds should be closed */
 		assert(!loop->activated);
 		for (fd = 0; fd < loop->fd_size; fd++) {
-			assert(!loop->fd[fd].evt[EVT_READ]);
-			assert(!loop->fd[fd].evt[EVT_WRITE]);
+			assert(!loop->fd[fd].io[IO_READ]);
+			assert(!loop->fd[fd].io[IO_WRITE]);
 		}
 
 		/* No timer is activated */
@@ -411,21 +411,21 @@ void free_evt_loop(struct evt_loop *loop)
 	}
 }
 
-void stop_evt_loop(struct evt_loop *loop)
+void stop_loop(struct loop *loop)
 {
 	loop->stopped = true;
 }
 
-static void __stop_remote_ilc_callback(struct evt_loop *loop, struct ilc *ilc)
+static void __stop_remote_ilc_callback(struct loop *loop, struct ilc *ilc)
 {
-	stop_evt_loop(loop);
+	stop_loop(loop);
 }
 
 static struct ilc __stop_remote_ilc = {
 	.callback	= __stop_remote_ilc_callback
 };
 
-int stop_remote_evt_loop(struct evt_loop *loop)
+int stop_remote_loop(struct loop *loop)
 {
 	return add_ilc(loop, &__stop_remote_ilc);
 }

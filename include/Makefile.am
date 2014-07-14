@@ -23,7 +23,7 @@ nobase_include_HEADERS = \
 			 ls/base64.h \
 			 ls/url_encode.h \
 			 ls/percent_encode.h \
-			 ls/evt.h \
+			 ls/loop.h \
 			 ls/bitops/__ffs.h \
 			 ls/bitops/__fls.h \
 			 ls/bitops/atomic.h \
