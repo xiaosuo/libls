@@ -1,5 +1,5 @@
-AM_CFLAGS = -I$(top_srcdir)/include -Wall -Werror $(LIBSYSTEMD_DAEMON_CFLAGS)
-AM_LDFLAGS = $(LIBSYSTEMD_DAEMON_LIBS)
+AM_CFLAGS = -I$(top_srcdir)/include -Wall -Werror
+AM_LDFLAGS =
 lib_LTLIBRARIES = libls.la
 libls_la_SOURCES = \
 		   rbtree.c \
