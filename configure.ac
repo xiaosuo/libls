@@ -38,7 +38,10 @@ AC_TYPE_UINT8_T
 AC_FUNC_FORK
 AC_FUNC_MALLOC
 AC_FUNC_REALLOC
-AC_SEARCH_LIBS([pthread_create], [pthread])
+AX_PTHREAD([], [exit 1])
+LIBS="$PTHREAD_LIBS $LIBS"
+CFLAGS="$CFLAGS $PTHREAD_CFLAGS"
+CC="$PTHREAD_CC"
 AC_CHECK_FUNCS([dup2 ftruncate gettimeofday isascii memchr memset mkfifo rmdir setenv socket strchr strdup strndup strrchr])
 
 AC_CONFIG_FILES([Makefile
