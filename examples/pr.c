@@ -1,4 +1,5 @@
 #include <ls.h>
+#include <errno.h>
 
 int main(int argc, char *argv[])
 {
@@ -12,6 +13,8 @@ int main(int argc, char *argv[])
 	pr_notice("pr_notice\n");
 	pr_info("pr_info\n");
 	pr_debug("pr_debug\n");
+	errno = EINVAL;
+	pr_errno("error");
 
 	return EXIT_SUCCESS;
 }

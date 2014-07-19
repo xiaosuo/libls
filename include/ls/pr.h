@@ -45,6 +45,9 @@ extern int (*pr)(const char *fmt, ...);
 	pr(LS_DEBUG fmt, ##args)
 #endif
 
+#define pr_errno(fmt, args...) \
+	pr_err(fmt ": %m\n", ##args)
+
 #define die(fmt, args...) \
 	do { \
 		pr_err(fmt "\n", ##args); \
