@@ -58,6 +58,14 @@ static inline int add_o(struct loop *loop, int fd, struct io *io)
 	return add_io(loop, fd, IO_WRITE, io);
 }
 void del_io(struct loop *loop, int fd, enum IO event);
+static inline void del_i(struct loop *loop, int fd)
+{
+	del_io(loop, fd, IO_READ);
+}
+static inline void del_o(struct loop *loop, int fd)
+{
+	del_io(loop, fd, IO_WRITE);
+}
 void close_io(struct loop *loop, int fd);
 
 struct timer {
