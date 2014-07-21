@@ -2,6 +2,7 @@
 #define __LS_PR_H
 
 #include <stdio.h>
+#include <stdlib.h>
 
 static inline __attribute__((format(printf, 1, 2)))
 int no_pr(const char *fmt, ...)
@@ -43,5 +44,17 @@ extern int (*pr)(const char *fmt, ...);
 #define pr_debug(fmt, args...) \
 	pr(LS_DEBUG fmt, ##args)
 #endif
+
+#define pr_errno(fmt, args...) \
+	pr_err(fmt ": %m\n", ##args)
+
+#define die(fmt, args...) \
+	do { \
+		pr_err(fmt "\n", ##args); \
+		exit(EXIT_FAILURE); \
+	} while (0)
+
+#define fail(fmt, args...) \
+	die("Failed to " fmt, ##args)
 
 #endif /* __LS_PR_H */

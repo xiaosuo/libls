@@ -12,6 +12,7 @@
 #include <string.h>
 #include <syslog.h>
 #include <ctype.h>
+#include <stddef.h>
 
 #include <sys/resource.h>
 #include <sys/stat.h>
@@ -27,24 +28,32 @@
 static int get_extra_fds(int **pfda, int *pfda_len)
 {
 	DIR *dir;
-	struct dirent entry, *result;
+	struct dirent *entry, *result;
 	int rc = -1, fda_len = 0, fda_size = 0, *fda = NULL, fd;
+	long name_max;
+
+	name_max = pathconf("/proc/self/fd", _PC_NAME_MAX);
+	if (name_max == -1)
+		name_max = 255;
+	entry = malloc(offsetof(struct dirent, d_name) + name_max + 1);
+	if (!entry)
+		goto err;
 
 	dir = opendir("/proc/self/fd");
 	if (!dir)
-		goto err;
+		goto err2;
 	while (1) {
-		rc = readdir_r(dir, &entry, &result);
+		rc = readdir_r(dir, entry, &result);
 		if (rc > 0) {
 			errno = rc;
 			rc = -1;
-			goto err2;
+			goto err3;
 		}
 		if (!result)
 			break;
-		if (entry.d_name[0] == '.')
+		if (entry->d_name[0] == '.')
 			continue;
-		fd = atoi(entry.d_name);
+		fd = atoi(entry->d_name);
 		if (fd < 3 || fd == dirfd(dir))
 			continue;
 		if (fda_len >= fda_size) {
@@ -57,7 +66,7 @@ static int get_extra_fds(int **pfda, int *pfda_len)
 			if (!new_fda) {
 				free(fda);
 				rc = -1;
-				goto err2;
+				goto err3;
 			}
 			fda = new_fda;
 		}
@@ -65,8 +74,10 @@ static int get_extra_fds(int **pfda, int *pfda_len)
 	}
 	*pfda = fda;
 	*pfda_len = fda_len;
-err2:
+err3:
 	closedir(dir);
+err2:
+	free(entry);
 err:
 	return rc;
 }
