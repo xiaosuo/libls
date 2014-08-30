@@ -213,6 +213,8 @@ void run_loop(struct loop *loop)
 			struct io *io;
 
 			events = loop->eev[i].events;
+			if (events & (EPOLLHUP | EPOLLERR))
+				events |= EPOLLIN | EPOLLOUT;
 			fd = loop->eev[i].data.fd;
 			if ((events & EPOLLOUT) &&
 			    (io = loop->fd[fd].io[IO_WRITE])) {
